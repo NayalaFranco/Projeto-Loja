@@ -16,8 +16,15 @@ namespace Loja.Domain.Entities
         }
 
         public int Id { get; }
+
+
         public int VendedorId { get; private set; }
+        public Vendedor Vendedor { get; private set; }
+
         public int ClienteId { get; private set; }
+        public Cliente Cliente { get; private set; }
+
+
         public List<Produto> ProdutosList { get; private set; }
         public EnumStatusVenda StatusVenda { get; private set; }
 
