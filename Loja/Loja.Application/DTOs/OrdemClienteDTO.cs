@@ -12,5 +12,6 @@ namespace Loja.Application.DTOs
         public Cliente Cliente { get; }
         public List<Produto> ProdutosList { get; set; }
         public EnumStatusVenda StatusVenda { get; }
+        public DateTime DataCriacao { get; }
     }
 }

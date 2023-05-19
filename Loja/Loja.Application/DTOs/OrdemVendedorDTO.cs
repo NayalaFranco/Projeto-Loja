@@ -17,5 +17,6 @@ namespace Loja.Application.DTOs
 
         public List<Produto> ProdutosList { get; set; }
         public EnumStatusVenda StatusVenda { get; set; }
+        public DateTime DataCriacao { get; }
     }
 }

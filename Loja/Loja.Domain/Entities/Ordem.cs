@@ -5,7 +5,7 @@ namespace Loja.Domain.Entities
 {
     public sealed class Ordem
     {
-        public Ordem(int vendedorId, int clientId, List<Produto> produtosList)
+        public Ordem(int vendedorId, int clientId, List<Produto> produtosList, DateTime dataCriacao)
         {
             ProdutosList = new List<Produto>();
 
@@ -13,6 +13,7 @@ namespace Loja.Domain.Entities
             ClienteId = clientId;
             ProdutosList = produtosList;
             StatusVenda = EnumStatusVenda.Aberto;
+            DataCriacao = dataCriacao;
         }
 
         public int Id { get; }
@@ -27,6 +28,8 @@ namespace Loja.Domain.Entities
 
         public List<Produto> ProdutosList { get; private set; }
         public EnumStatusVenda StatusVenda { get; private set; }
+
+        public DateTime DataCriacao { get; private set; }
 
         public void UpdateLista(List<Produto> produtosList, EnumStatusVenda statusVendaNovo)
         {
