@@ -13,11 +13,13 @@ namespace Loja.Infrastructure.Context
         public DbSet<Produto> Produtos { get; set; }
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Vendedor> Vendedores { get; set; }
-        public DbSet<Ordem> Ordens {  get; set; }
+        public DbSet<Ordem> Ordens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            // Aplica as configurações das entidades que
+            // foram feitas na pasta EntitiesConfiguration
             builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext)
                 .Assembly);
         }
