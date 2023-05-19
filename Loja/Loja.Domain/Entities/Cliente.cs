@@ -2,7 +2,9 @@
 {
     public sealed class Cliente : EntityPessoa
     {
-        public Cliente(string nome, string cpf, DateTime nascimento, string endereco, string email, string telefone, DateTime dataCadastro)
+        public Cliente(string nome, string cpf, DateTime nascimento,
+            string endereco, string email, string telefone, 
+            DateTime dataCadastro)
         {
             Nome = nome;
             CPF = cpf;

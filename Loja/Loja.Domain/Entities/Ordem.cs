@@ -5,7 +5,8 @@ namespace Loja.Domain.Entities
 {
     public sealed class Ordem
     {
-        public Ordem(int vendedorId, int clientId, List<Produto> produtosList, DateTime dataCriacao)
+        public Ordem(int vendedorId, int clientId,
+            List<Produto> produtosList, DateTime dataCriacao)
         {
             ProdutosList = new List<Produto>();
 

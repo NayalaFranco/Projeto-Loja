@@ -2,7 +2,9 @@
 {
     public sealed class Vendedor : EntityPessoa
     {
-        public Vendedor(string nome, string cpf, DateTime nascimento, string endereco, string email, string telefone, DateTime dataCadastro)
+        public Vendedor(string nome, string cpf,
+            DateTime nascimento, string endereco, string email,
+            string telefone, DateTime dataCadastro)
         {
             Nome = nome;
             CPF = cpf;
