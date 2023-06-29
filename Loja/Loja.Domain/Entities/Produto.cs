@@ -4,26 +4,6 @@
     {
         public Produto(string nome, string descricao,
             decimal preco, string imagemUrl, int estoque,
-            DateTime dataCadastro)
-        {
-            Nome = nome;
-            Descricao = descricao;
-            Preco = preco;
-            ImagemUrl = imagemUrl;
-            Estoque = estoque;
-            DataCadastro = dataCadastro;
-        }
-
-        public string? Descricao { get; private set; }
-        public decimal Preco { get; private set; }
-        public string ImagemUrl { get; private set; }
-        public int Estoque { get; private set; }
-        public DateTime DataCadastro { get; private set; }
-        public int CategoriaId { get; set; }
-        public Categoria? Categoria { get; set; }
-
-        public void Update(string nome, string descricao,
-            decimal preco, string imagemUrl, int estoque,
             DateTime dataCadastro, int categoriaId)
         {
             Nome = nome;
@@ -34,5 +14,14 @@
             DataCadastro = dataCadastro;
             CategoriaId = categoriaId;
         }
+
+        public DateTime DataCadastro { get; private set; }
+        public string Descricao { get; private set; }
+        public decimal Preco { get; private set; }
+        public string ImagemUrl { get; private set; }
+        public int Estoque { get; private set; }
+        public int CategoriaId { get; private set; }
+        public Categoria? Categoria { get; set; }
+        public ICollection<OrdemProduto> Ordens { get; set; }
     }
 }

@@ -2,8 +2,7 @@
 {
     public abstract class Entity
     {
-        public int Id { get; }
+        public int Id { get; protected set; }
         public string Nome { get; protected set; }
-
     }
 }
