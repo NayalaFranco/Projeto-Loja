@@ -9,11 +9,15 @@ namespace Loja.Application.Mappings
         public DomainToDTOMappingProfile()
         {
             CreateMap<Categoria, CategoriaDTO>().ReverseMap();
+
             CreateMap<Produto, ProdutoDTO>().ReverseMap();
+
             CreateMap<Cliente, ClienteDTO>().ReverseMap();
             CreateMap<Vendedor, VendedorDTO>().ReverseMap();
-            CreateMap<Ordem, OrdemClienteDTO>().ReverseMap();
-            CreateMap<Ordem, OrdemVendedorDTO>().ReverseMap();
+
+            CreateMap<Ordem, OrdemDTO>().ReverseMap();
+
+            CreateMap<OrdemProduto, OrdemProdutoDTO>().ReverseMap();
         }
     }
 }
