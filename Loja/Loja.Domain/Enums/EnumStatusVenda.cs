@@ -2,7 +2,6 @@
 {
     public enum EnumStatusVenda
     {
-        Aberto,
         AguardandoPagamento,
         PagamentoAprovado,
         EnviadoParaTransportadora,
