@@ -12,6 +12,9 @@ namespace Loja.CrossCutting.IoC
 {
     public static class DependencyInjection
     {
+        /// <summary>
+        /// Injeta os serviços.
+        /// </summary>
         public static IServiceCollection AddInfrastructure(this IServiceCollection services,
             IConfiguration configuration)
         {
@@ -32,8 +35,7 @@ namespace Loja.CrossCutting.IoC
             services.AddScoped<IVendedorService, VendedorService>();
 
             services.AddScoped<IOrdemRepository, OrdemRepository>();
-            services.AddScoped<IOrdemClienteService, OrdemClienteService>();
-            services.AddScoped<IOrdemVendedorService, OrdemVendedorService>();
+            services.AddScoped<IOrdemService, OrdemService>();
 
             services.AddAutoMapper(typeof(DomainToDTOMappingProfile));
 
