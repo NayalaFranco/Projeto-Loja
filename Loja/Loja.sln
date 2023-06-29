@@ -3,15 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loja.API", "Loja.API\Loja.API.csproj", "{DE22153D-0232-4891-8928-1DBDCA86380F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Loja.API", "Loja.API\Loja.API.csproj", "{DE22153D-0232-4891-8928-1DBDCA86380F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loja.Domain", "Loja.Domain\Loja.Domain.csproj", "{92A335E8-7742-4451-8E03-8DE1A45ACCF2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Loja.Domain", "Loja.Domain\Loja.Domain.csproj", "{92A335E8-7742-4451-8E03-8DE1A45ACCF2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loja.Application", "Loja.Application\Loja.Application.csproj", "{16D8081E-6FC7-45D8-AE5C-02CDCD37B358}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Loja.Application", "Loja.Application\Loja.Application.csproj", "{16D8081E-6FC7-45D8-AE5C-02CDCD37B358}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loja.Infrastructure", "Loja.Infrastructure\Loja.Infrastructure.csproj", "{E6389831-8407-47B3-8F15-C9FFE21CA45C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Loja.Infrastructure", "Loja.Infrastructure\Loja.Infrastructure.csproj", "{E6389831-8407-47B3-8F15-C9FFE21CA45C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loja.CrossCutting", "Loja.CrossCutting\Loja.CrossCutting.csproj", "{68FDE574-7FA0-4AA0-A037-8BCCBB4BC7A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Loja.CrossCutting", "Loja.CrossCutting\Loja.CrossCutting.csproj", "{68FDE574-7FA0-4AA0-A037-8BCCBB4BC7A5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loja.TestesUnitarios", "Loja.TestesUnitarios\Loja.TestesUnitarios.csproj", "{439ABF4E-77A4-46B7-BE02-D3785CD10017}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{68FDE574-7FA0-4AA0-A037-8BCCBB4BC7A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68FDE574-7FA0-4AA0-A037-8BCCBB4BC7A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68FDE574-7FA0-4AA0-A037-8BCCBB4BC7A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{439ABF4E-77A4-46B7-BE02-D3785CD10017}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{439ABF4E-77A4-46B7-BE02-D3785CD10017}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{439ABF4E-77A4-46B7-BE02-D3785CD10017}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{439ABF4E-77A4-46B7-BE02-D3785CD10017}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
