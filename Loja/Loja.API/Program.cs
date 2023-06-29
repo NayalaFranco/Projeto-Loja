@@ -1,5 +1,6 @@
-using System.Text.Json.Serialization;
+using Loja.API.Extensions;
 using Loja.CrossCutting.IoC;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,7 @@ builder.Services.AddControllers()
             .ReferenceHandler = ReferenceHandler.IgnoreCycles;
         options.JsonSerializerOptions
             .Converters.Add(new JsonStringEnumConverter());
-    });        
+    });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -28,6 +29,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.ConfigureExceptionHandler();
 
 app.UseHttpsRedirection();
 
