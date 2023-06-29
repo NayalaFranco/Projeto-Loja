@@ -1,12 +1,13 @@
 ﻿using Loja.Application.DTOs;
+using Loja.Domain.PaginationEntities;
 
 namespace Loja.Application.Interfaces
 {
     public interface IVendedorService
     {
-        Task<IEnumerable<VendedorDTO>> GetVendedores();
+        Task<Tuple<IList<VendedorDTO>, PagingInfo>> GetVendedores(PagingParameters parameters);
         Task<VendedorDTO> GetById(int? id);
-        Task Add(VendedorDTO vendedorDto);
+        Task<VendedorDTO> Add(VendedorDTO vendedorDto);
         Task Update(VendedorDTO vendedorDto);
         Task Remove(int? id);
     }

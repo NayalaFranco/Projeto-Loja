@@ -3,48 +3,91 @@ using Loja.Application.DTOs;
 using Loja.Application.Interfaces;
 using Loja.Domain.Entities;
 using Loja.Domain.Interfaces;
+using Loja.Domain.PaginationEntities;
+using System.Linq.Expressions;
 
 namespace Loja.Application.Services
 {
     public class CategoriaService : ICategoriaService
     {
-        private readonly ICategoriaRepository _categoryRepository;
+        private readonly ICategoriaRepository _categoriaRepository;
         private readonly IMapper _mapper;
-        public CategoriaService(ICategoriaRepository categoryRepository,
-            IMapper mapper)
+        public CategoriaService(IMapper mapper, ICategoriaRepository categoriaRepository)
         {
-            _categoryRepository = categoryRepository;
+            _categoriaRepository = categoriaRepository;
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<CategoriaDTO>> GetCategorias()
+        /// <summary>
+        /// Obtém uma lista paginada de categorias.
+        /// </summary>
+        /// <param name="parameters">Objeto com os dados de paginação</param>
+        /// <returns>Retorna uma lista de CategoriaDTO.</returns>
+        public async Task<Tuple<IList<CategoriaDTO>, PagingInfo>> GetCategorias(PagingParameters parameters)
         {
-            var categoriesEntity = await _categoryRepository.GetCategoriasAsync();
-            return _mapper.Map<IEnumerable<CategoriaDTO>>(categoriesEntity);
+            Expression<Func<Categoria, Object>> orderByExpression;
+            switch (parameters.OrderedBy.ToLower())
+            {
+                case "name":
+                case "nome":
+                    orderByExpression = x => x.Nome;
+                    break;
+                default:
+                    orderByExpression = x => x.Id;
+                    break;
+            }
+
+            var (categorias, pagingInfo) = await _categoriaRepository.GetAsync(parameters, orderByExpression);
+
+            var categoriasDto = _mapper.Map<IList<CategoriaDTO>>(categorias);
+
+            return new Tuple<IList<CategoriaDTO>, PagingInfo>(categoriasDto, pagingInfo);
         }
 
+        /// <summary>
+        /// Obtém uma categoria pelo Id.
+        /// </summary>
+        /// <param name="id">Id da categoria.</param>
+        /// <returns>Retorna uma CategoriaDTO.</returns>
         public async Task<CategoriaDTO> GetById(int? id)
         {
-            var categoryEntity = await _categoryRepository.GetByIdAsync(id);
-            return _mapper.Map<CategoriaDTO>(categoryEntity);
+            var categoriaEntity = await _categoriaRepository.GetByIdAsync(x => x.Id == id);
+            return _mapper.Map<CategoriaDTO>(categoriaEntity);
         }
 
-        public async Task Add(CategoriaDTO categoryDto)
+        /// <summary>
+        /// Adiciona um categoria à tabela do banco de dados.
+        /// </summary>
+        /// <param name="categoriaDto">Objeto com os dados do categoria a ser adicionado.</param>
+        /// <returns>Retorna o categoria adicionado.</returns>
+        public async Task<CategoriaDTO> Add(CategoriaDTO categoriaDto)
         {
-            var categoryEntity = _mapper.Map<Categoria>(categoryDto);
-            await _categoryRepository.CreateAsync(categoryEntity);
+            var categoriaEntity = _mapper.Map<Categoria>(categoriaDto);
+            var categoria = await _categoriaRepository.CreateAsync(categoriaEntity);
+            return _mapper.Map<CategoriaDTO>(categoria);
+
         }
 
-        public async Task Update(CategoriaDTO categoryDto)
+        /// <summary>
+        /// Atualiza um categoria.
+        /// </summary>
+        /// <param name="categoriaDto">Objeto com os dados do categoria a ser atualizado.</param>
+        /// <returns></returns>
+        public async Task Update(CategoriaDTO categoriaDto)
         {
-            var categoryEntity = _mapper.Map<Categoria>(categoryDto);
-            await _categoryRepository.UpdateAsync(categoryEntity);
+            var categoriaEntity = _mapper.Map<Categoria>(categoriaDto);
+            await _categoriaRepository.UpdateAsync(categoriaEntity);
         }
 
+        /// <summary>
+        /// Remove um categoria do banco de dados.
+        /// </summary>
+        /// <param name="id">Id do categoria.</param>
+        /// <returns></returns>
         public async Task Remove(int? id)
         {
-            var categoryEntity = _categoryRepository.GetByIdAsync(id).Result;
-            await _categoryRepository.RemoveAsync(categoryEntity);
+            var categoriaEntity = _categoriaRepository.GetByIdAsync(x => x.Id == id).Result;
+            await _categoriaRepository.RemoveAsync(categoriaEntity);
         }
     }
 }
