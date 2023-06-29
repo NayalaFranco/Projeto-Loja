@@ -14,6 +14,7 @@ namespace Loja.Infrastructure.Context
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Vendedor> Vendedores { get; set; }
         public DbSet<Ordem> Ordens { get; set; }
+        public DbSet<OrdemProduto> OrdemProdutoJuncao { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

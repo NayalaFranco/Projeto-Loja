@@ -18,9 +18,9 @@ namespace Loja.Infrastructure.EntitiesConfiguration
                 .WithMany(c => c.Ordens)
                 .HasForeignKey(c => c.ClienteId);
 
-            builder.Property(p => p.ProdutosList).IsRequired();
             builder.Property(p => p.StatusVenda).IsRequired();
             builder.Property(p => p.DataCriacao).IsRequired();
+            builder.Property(p => p.Total).HasPrecision(10, 2);
         }
     }
 }
