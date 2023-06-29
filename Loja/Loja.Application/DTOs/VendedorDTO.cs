@@ -7,7 +7,7 @@ namespace Loja.Application.DTOs
 {
     public class VendedorDTO
     {
-        public int Id { get; }
+        public int Id { get; set; }
 
         [Required(ErrorMessage = "O nome é obrigatório")]
         [MinLength(3)]
@@ -16,7 +16,7 @@ namespace Loja.Application.DTOs
 
         [Required(ErrorMessage = "O CPF é obrigatório")]
         [CpfValidation]
-        public string CPF { get; set; }
+        public string Cpf { get; set; }
 
         [Required(ErrorMessage = "Informe a data de nascimento")]
         public DateTime Nascimento { get; set; }
@@ -26,7 +26,7 @@ namespace Loja.Application.DTOs
         [MaxLength(200)]
         public string Endereco { get; set; }
 
-        [EmailAddress]
+        [EmailAddress(ErrorMessage = "Email invalido!")]
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Informe o telefone")]
