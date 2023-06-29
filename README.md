@@ -1,2 +1,4 @@
 # Projeto-Loja
-Portifólio - Projeto demonstrando meus conhecimentos com API
+- Projeto demonstrando meus conhecimentos com API.  
+- Feita em dotnet 7.
+- Usa o padrão Clean Architecture.
