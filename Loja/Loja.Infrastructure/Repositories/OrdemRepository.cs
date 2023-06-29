@@ -1,51 +1,55 @@
 ﻿using Loja.Domain.Entities;
 using Loja.Domain.Interfaces;
+using Loja.Domain.PaginationEntities;
 using Loja.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Loja.Infrastructure.Repositories
 {
-    public class OrdemRepository : IOrdemRepository
+    public class OrdemRepository : Repository<Ordem>, IOrdemRepository
     {
-        private ApplicationDbContext _ordemContext;
-        public OrdemRepository(ApplicationDbContext context)
+        public OrdemRepository(ApplicationDbContext context) : base(context)
         {
-            _ordemContext = context;
         }
 
-        public async Task<Ordem> CreateAsync(Ordem ordem)
+        /// <summary>
+        /// Obtém ordens de forma assíncrona e inclui a lista de Produtos.
+        /// </summary>
+        /// <param name="parameters">Parâmetros de paginação.</param>
+        /// <param name="orderByExpression">Lambda com a definição de ordenação para a lista.</param>
+        /// <param name="predicate">Delegate com os critérios de busca.</param>
+        /// <returns>Retorna uma tupla com as ordens e os dados da paginação</returns>
+        public async Task<Tuple<IList<Ordem>, PagingInfo>> GetOrdensAsync(PagingParameters parameters, Expression<Func<Ordem, object>> orderByExpression, Expression<Func<Ordem, bool>> predicate)
         {
-            _ordemContext.Add(ordem);
-            await _ordemContext.SaveChangesAsync();
-            return ordem;
+            var query = Get();
+
+            if (orderByExpression != null)
+                query = query.OrderBy(orderByExpression);
+
+            var count = await query.Where(predicate).CountAsync();
+            var items = await query
+                .Where(predicate)
+                .Include(o => o.Produtos)
+                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                .Take(parameters.PageSize).ToListAsync();
+
+            var pagingInfo = new PagingInfo(count, parameters.PageNumber, parameters.PageSize);
+
+            return new Tuple<IList<Ordem>, PagingInfo>(items, pagingInfo);
         }
 
-        public async Task<Ordem> GetByIdAsync(int? id)
+        /// <summary>
+        /// Obtém uma ordem pelo Id e Inclui a lista de produtos com cada produto.
+        /// </summary>
+        /// <param name="predicate">Delegate com os critérios de busca.</param>
+        /// <returns>Retorna uma ordem</returns>
+        public async Task<Ordem> GetOrdemByIdIncluiProdutoAsync(Expression<Func<Ordem, bool>> predicate)
         {
-            return await _ordemContext.Ordens
-                .Include(v => v.Vendedor)
-                .Include(c => c.Cliente)
-                .SingleOrDefaultAsync(o => o.Id == id);
-        }
-
-        public async Task<IEnumerable<Ordem>> GetOrdensAsync()
-        {
-            // Aprimorar depois para paginação
-            return await _ordemContext.Ordens.ToListAsync();
-        }
-
-        public async Task<Ordem> RemoveAsync(Ordem ordem)
-        {
-            _ordemContext.Remove(ordem);
-            await _ordemContext.SaveChangesAsync();
-            return ordem;
-        }
-
-        public async Task<Ordem> UpdateAsync(Ordem ordem)
-        {
-            _ordemContext.Update(ordem);
-            await _ordemContext.SaveChangesAsync();
-            return ordem;
+            return await _context.Ordens.AsNoTracking()
+                .Include(o => o.Produtos)
+                .ThenInclude(p => p.Produto)
+                .SingleOrDefaultAsync(predicate);
         }
     }
 }

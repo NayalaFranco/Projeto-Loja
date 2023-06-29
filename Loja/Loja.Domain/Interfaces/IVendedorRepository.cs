@@ -2,12 +2,7 @@
 
 namespace Loja.Domain.Interfaces
 {
-    public interface IVendedorRepository
+    public interface IVendedorRepository : IRepository<Vendedor>
     {
-        Task<IEnumerable<Vendedor>> GetVendedoresAsync();
-        Task<Vendedor> GetByIdAsync(int? id);
-        Task<Vendedor> CreateAsync(Vendedor vendedor);
-        Task<Vendedor> UpdateAsync(Vendedor vendedor);
-        Task<Vendedor> RemoveAsync(Vendedor vendedor);
     }
 }

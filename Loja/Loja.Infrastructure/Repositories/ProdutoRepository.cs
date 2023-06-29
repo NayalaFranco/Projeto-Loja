@@ -5,45 +5,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Loja.Infrastructure.Repositories
 {
-    public class ProdutoRepository : IProdutoRepository
+    public class ProdutoRepository : Repository<Produto>, IProdutoRepository
     {
-        private ApplicationDbContext _produtoContext;
-        public ProdutoRepository(ApplicationDbContext context)
+        public ProdutoRepository(ApplicationDbContext context) : base(context)
         {
-            _produtoContext = context;
         }
 
-        public async Task<Produto> CreateAsync(Produto produto)
+        /// <summary>
+        /// Obtém um produto pelo id, incluindo sua categoria.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Retorna um produto com categoria inclusa.</returns>
+        public async Task<Produto> GetByIdIncludeCategoriaAsync(int? id)
         {
-            _produtoContext.Add(produto);
-            await _produtoContext.SaveChangesAsync();
-            return produto;
-        }
-
-        public async Task<Produto> GetByIdAsync(int? id)
-        {
-            return await _produtoContext.Produtos.Include(c => c.Categoria)
-               .SingleOrDefaultAsync(p => p.Id == id);
-        }
-
-        public async Task<IEnumerable<Produto>> GetProdutosAsync()
-        {
-            // Aprimorar depois para paginação
-            return await _produtoContext.Produtos.ToListAsync();
-        }
-
-        public async Task<Produto> RemoveAsync(Produto produto)
-        {
-            _produtoContext.Remove(produto);
-            await _produtoContext.SaveChangesAsync();
-            return produto;
-        }
-
-        public async Task<Produto> UpdateAsync(Produto produto)
-        {
-            _produtoContext.Update(produto);
-            await _produtoContext.SaveChangesAsync();
-            return produto;
+            return await _context.Produtos.Include(c => c.Categoria).AsNoTracking().SingleOrDefaultAsync(x => x.Id == id);
         }
     }
 }
