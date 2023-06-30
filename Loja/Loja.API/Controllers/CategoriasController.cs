@@ -24,13 +24,13 @@ namespace Loja.API.Controllers
         /// <param name="parameters">Parâmetros de paginação.</param>
         /// <returns>Retorna um Ok Object Result com a lista de Categorias.</returns>
         [HttpGet]
-        public async Task<ActionResult<IList<CategoriaDTO>>> Get([FromQuery] PagingParameters parameters)
+        public async Task<ActionResult<List<CategoriaDTO>>> Get([FromQuery] PagingParameters parameters)
         {
-            var (categorias, pagingInfo) = await _categoriaService.GetCategorias(parameters);
+            var pagingList = await _categoriaService.GetCategorias(parameters);
 
-            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagingInfo));
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagingList.PaginationInfo));
 
-            return Ok(categorias);
+            return Ok(pagingList.Items);
 
         }
 
@@ -74,7 +74,7 @@ namespace Loja.API.Controllers
         public async Task<ActionResult> Put(int id, CategoriaDTO categoriaDto)
         {
             if (id != categoriaDto.Id)
-                return BadRequest();
+                return NoContent();
 
             await _categoriaService.Update(categoriaDto);
             return Ok(categoriaDto);

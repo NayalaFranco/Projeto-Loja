@@ -8,8 +8,8 @@ namespace Loja.Application.Interfaces
 {
     public interface IOrdemService
     {
-        Task<Tuple<IList<OrdemDTO>, PagingInfo>> GetOrdens(PagingParameters parameters);
-        Task<Tuple<IList<OrdemDTO>, PagingInfo>> GetOrdens(PagingParameters parameters, Expression<Func<Ordem, bool>> predicate);
+        Task<PagingList<OrdemDTO>> GetOrdens(PagingParameters parameters);
+        Task<PagingList<OrdemDTO>> GetOrdens(PagingParameters parameters, Expression<Func<Ordem, bool>> predicate);
         Task<OrdemDTO> GetOrdemComProdutosById(int? id);
         Task<OrdemDTO> GetById(int? id);
         Task<OrdemDTO> Add(OrdemDTO ordemDto);

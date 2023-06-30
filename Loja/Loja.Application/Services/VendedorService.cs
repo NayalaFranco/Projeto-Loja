@@ -4,7 +4,6 @@ using Loja.Application.Interfaces;
 using Loja.Domain.Entities;
 using Loja.Domain.Interfaces;
 using Loja.Domain.PaginationEntities;
-using System.Linq.Expressions;
 
 namespace Loja.Application.Services
 {
@@ -35,30 +34,16 @@ namespace Loja.Application.Services
         /// Obtém uma lista paginada com os vendedores.
         /// </summary>
         /// <param name="parameters">Objeto com os parâmetros de paginação</param>
-        /// <returns>Retorna uma tupla com uma lista de vendedores e os dados de paginação</returns>
-        public async Task<Tuple<IList<VendedorDTO>, PagingInfo>> GetVendedores(PagingParameters parameters)
+        /// <returns>Retorna um objeto PagingList com a lista de vendedores e os dados de paginação</returns>
+        public async Task<PagingList<VendedorDTO>> GetVendedores(PagingParameters parameters)
         {
-            Expression<Func<Vendedor, Object>> orderByExpression;
-            switch (parameters.OrderedBy.ToLower())
-            {
-                case "name":
-                case "nome":
-                    orderByExpression = x => x.Nome;
-                    break;
-                case "data":
-                case "date":
-                    orderByExpression = x => x.DataCadastro;
-                    break;
-                default:
-                    orderByExpression = x => x.Id;
-                    break;
-            }
+            var pagingList = await _vendedorRepository.GetAsync(parameters);
 
-            var (vendedor, pagingInfo) = await _vendedorRepository.GetAsync(parameters, orderByExpression);
+            var vendedorDto = _mapper.Map<List<VendedorDTO>>(pagingList.Items);
 
-            var vendedorDto = _mapper.Map<List<VendedorDTO>>(vendedor);
+            var pagingListDto = new PagingList<VendedorDTO>(vendedorDto, pagingList.PaginationInfo);
 
-            return new Tuple<IList<VendedorDTO>, PagingInfo>(vendedorDto, pagingInfo);
+            return pagingListDto;
         }
 
         /// <summary>

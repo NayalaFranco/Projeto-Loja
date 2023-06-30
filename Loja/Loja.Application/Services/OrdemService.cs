@@ -48,16 +48,16 @@ namespace Loja.Application.Services
         /// Obtém uma lista paginada com as Ordens.
         /// </summary>
         /// <param name="parameters">Objeto com os parâmetros de paginação</param>
-        /// <returns>Retorna uma tupla com uma lista de Ordens e os dados de paginação</returns>
-        public async Task<Tuple<IList<OrdemDTO>, PagingInfo>> GetOrdens(PagingParameters parameters)
+        /// <returns>Retorna um objeto PagingList com a lista de Ordens e os dados de paginação</returns>
+        public async Task<PagingList<OrdemDTO>> GetOrdens(PagingParameters parameters)
         {
-            var orderByExpression = SwitchCaseOrderedBy(parameters.OrderedBy);
+            var pagingList = await _ordemRepository.GetAsync(parameters);
 
-            var (ordens, pagingInfo) = await _ordemRepository.GetAsync(parameters, orderByExpression);
+            var ordensDto = _mapper.Map<List<OrdemDTO>>(pagingList.Items);
 
-            var ordensDto = _mapper.Map<List<OrdemDTO>>(ordens);
+            var pagingListDto = new PagingList<OrdemDTO>(ordensDto, pagingList.PaginationInfo);
 
-            return new Tuple<IList<OrdemDTO>, PagingInfo>(ordensDto, pagingInfo);
+            return pagingListDto;
         }
 
         /// <summary>
@@ -66,16 +66,16 @@ namespace Loja.Application.Services
         /// </summary>
         /// <param name="parameters">Objeto com os parâmetros de paginação</param>
         /// <param name="predicate">Delegate com o critério de busca</param>
-        /// <returns>Retorna uma tupla com uma lista de Ordens e os dados de paginação</returns>
-        public async Task<Tuple<IList<OrdemDTO>, PagingInfo>> GetOrdens(PagingParameters parameters, Expression<Func<Ordem, bool>> predicate)
+        /// <returns>Retorna um objeto PagingList com a lista de Ordens e os dados de paginação</returns>
+        public async Task<PagingList<OrdemDTO>> GetOrdens(PagingParameters parameters, Expression<Func<Ordem, bool>> predicate)
         {
-            var orderByExpression = SwitchCaseOrderedBy(parameters.OrderedBy);
+            var pagingList = await _ordemRepository.GetAsync(parameters);
 
-            var (ordens, pagingInfo) = await _ordemRepository.GetAsync(parameters, orderByExpression);
+            var ordensDto = _mapper.Map<List<OrdemDTO>>(pagingList.Items);
 
-            var ordensDto = _mapper.Map<List<OrdemDTO>>(ordens);
+            var pagingListDto = new PagingList<OrdemDTO>(ordensDto, pagingList.PaginationInfo);
 
-            return new Tuple<IList<OrdemDTO>, PagingInfo>(ordensDto, pagingInfo);
+            return pagingListDto;
         }
 
         /// <summary>
@@ -116,31 +116,6 @@ namespace Loja.Application.Services
         {
             var ordemEntity = _ordemRepository.GetByIdAsync(x => x.Id == id).Result;
             await _ordemRepository.RemoveAsync(ordemEntity);
-        }
-
-        /// <summary>
-        /// Converte a string da ordenação para uma expressão lambda.
-        /// </summary>
-        /// <param name="orderedBy">String com a palavra da ordenação.</param>
-        /// <returns>Retorna a expressão lambda a ser usada para ordenar.</returns>
-        private static Expression<Func<Ordem, object>> SwitchCaseOrderedBy(string orderedBy)
-        {
-            switch (orderedBy.ToLower())
-            {
-                case "vendedorid":
-                case "sellerid":
-                    return x => x.VendedorId;
-                case "clienteid":
-                case "clientid":
-                    return x => x.ClienteId;
-                case "total":
-                    return x => x.Total;
-                case "data":
-                case "date":
-                    return x => x.DataCriacao;
-                default:
-                    return x => x.Id;
-            }
         }
     }
 }

@@ -23,13 +23,13 @@ namespace Loja.API.Controllers
         /// <param name="parameters">Parâmetros de paginação.</param>
         /// <returns>Retorna um Ok Object Result com a lista de vendedores.</returns>
         [HttpGet]
-        public async Task<ActionResult<IList<VendedorDTO>>> Get([FromQuery] PagingParameters parameters)
+        public async Task<ActionResult<List<VendedorDTO>>> Get([FromQuery] PagingParameters parameters)
         {
-            var (vendedores, pagingInfo) = await _vendedorService.GetVendedores(parameters);
+            var pagingList = await _vendedorService.GetVendedores(parameters);
 
-            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagingInfo));
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagingList.PaginationInfo));
 
-            return Ok(vendedores);
+            return Ok(pagingList.Items);
         }
 
         /// <summary>

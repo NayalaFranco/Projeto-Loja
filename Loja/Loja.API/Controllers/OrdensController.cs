@@ -51,13 +51,13 @@ namespace Loja.API.Controllers
         /// <param name="parameters">Parâmetros de paginação.</param>
         /// <returns>Retorna um Ok Object Result com a lista de ordens.</returns>
         [HttpGet]
-        public async Task<ActionResult<IList<OrdemDTO>>> Get([FromQuery] PagingParameters parameters)
+        public async Task<ActionResult<List<OrdemDTO>>> Get([FromQuery] PagingParameters parameters)
         {
-            var (ordens, pagingInfo) = await _ordemService.GetOrdens(parameters);
+            var pagingList = await _ordemService.GetOrdens(parameters);
 
-            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagingInfo));
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagingList.PaginationInfo));
 
-            return Ok(ordens);
+            return Ok(pagingList.Items);
         }
 
         /// <summary>
@@ -69,11 +69,11 @@ namespace Loja.API.Controllers
         [HttpGet("Cliente/{clienteId}", Name = "GetOrdensCliente")]
         public async Task<ActionResult<OrdemDTO>> GetOrdensCliente([FromQuery] PagingParameters parameters, int clienteId)
         {
-            var (ordens, pagingInfo) = await _ordemService.GetOrdens(parameters, x => x.ClienteId == clienteId);
+            var pagingList = await _ordemService.GetOrdens(parameters, x => x.ClienteId == clienteId);
 
-            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagingInfo));
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagingList.PaginationInfo));
 
-            return Ok(ordens);
+            return Ok(pagingList.Items);
         }
 
         /// <summary>
@@ -85,11 +85,11 @@ namespace Loja.API.Controllers
         [HttpGet("Vendedor/{vendedorId}", Name = "GetOrdensVendedor")]
         public async Task<ActionResult<OrdemDTO>> GetOrdensVendedor([FromQuery] PagingParameters parameters, int vendedorId)
         {
-            var (ordens, pagingInfo) = await _ordemService.GetOrdens(parameters, x => x.VendedorId == vendedorId);
+            var pagingList = await _ordemService.GetOrdens(parameters, x => x.VendedorId == vendedorId);
 
-            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagingInfo));
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagingList.PaginationInfo));
 
-            return Ok(ordens);
+            return Ok(pagingList.Items);
         }
 
         /// <summary>
@@ -100,6 +100,8 @@ namespace Loja.API.Controllers
         [HttpPost]
         public async Task<ActionResult> Post(OrdemDTO ordemDto)
         {
+            // TODO
+            // Jogar essas validações para as camadas de serviço ou domain.
             if (ordemDto.Produtos.IsNullOrEmpty())
                 return BadRequest("É necessário ter algum produto na lista.");
 
@@ -110,6 +112,7 @@ namespace Loja.API.Controllers
             decimal total = await CalcularTotal(ordemDto);
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            //
 
             ordemDto.Total = total;
 

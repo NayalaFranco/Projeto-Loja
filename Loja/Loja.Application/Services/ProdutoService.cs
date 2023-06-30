@@ -24,16 +24,16 @@ namespace Loja.Application.Services
         /// Obtém uma lista paginada com os produtos.
         /// </summary>
         /// <param name="parameters">Objeto com os parâmetros de paginação</param>
-        /// <returns>Retorna uma tupla com uma lista de produtos e os dados de paginação</returns>
-        public async Task<Tuple<IList<ProdutoDTO>, PagingInfo>> GetProdutos(PagingParameters parameters)
+        /// <returns>Retorna um objeto PagingList com a lista de produtos e os dados de paginação</returns>
+        public async Task<PagingList<ProdutoDTO>> GetProdutos(PagingParameters parameters)
         {
-            var orderByExpression = SwitchCaseOrderedBy(parameters.OrderedBy);
+            var pagingList = await _produtoRepository.GetAsync(parameters);
 
-            var (produtos, pagingInfo) = await _produtoRepository.GetAsync(parameters, orderByExpression);
+            var produtosDto = _mapper.Map<List<ProdutoDTO>>(pagingList.Items);
 
-            var produtosDto = _mapper.Map<List<ProdutoDTO>>(produtos);
+            var pagingListDto = new PagingList<ProdutoDTO>(produtosDto, pagingList.PaginationInfo);
 
-            return new Tuple<IList<ProdutoDTO>, PagingInfo>(produtosDto, pagingInfo);
+            return pagingListDto;
         }
 
 
@@ -42,16 +42,16 @@ namespace Loja.Application.Services
         /// </summary>
         /// <param name="parameters">Objeto com os parâmetros de paginação</param>
         /// <param name="predicate">Delegate com o critério de busca.</param>
-        /// <returns>Retorna uma tupla com uma lista de produtos e os dados de paginação</returns>
-        public async Task<Tuple<IList<ProdutoDTO>, PagingInfo>> GetProdutos(PagingParameters parameters, Expression<Func<Produto, bool>> predicate)
+        /// <returns>Retorna um objeto PagingList com a lista de produtos e os dados de paginação</returns>
+        public async Task<PagingList<ProdutoDTO>> GetProdutos(PagingParameters parameters, Expression<Func<Produto, bool>> predicate)
         {
-            var orderByExpression = SwitchCaseOrderedBy(parameters.OrderedBy);
+            var pagingList = await _produtoRepository.GetAsync(parameters, predicate);
 
-            var (produtos, pagingInfo) = await _produtoRepository.GetAsync(parameters, orderByExpression, predicate);
+            var produtosDto = _mapper.Map<List<ProdutoDTO>>(pagingList.Items);
 
-            var produtosDto = _mapper.Map<List<ProdutoDTO>>(produtos);
+            var pagingListDto = new PagingList<ProdutoDTO>(produtosDto, pagingList.PaginationInfo);
 
-            return new Tuple<IList<ProdutoDTO>, PagingInfo>(produtosDto, pagingInfo);
+            return pagingListDto;
         }
 
         /// <summary>

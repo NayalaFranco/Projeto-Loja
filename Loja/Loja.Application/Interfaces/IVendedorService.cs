@@ -5,7 +5,7 @@ namespace Loja.Application.Interfaces
 {
     public interface IVendedorService
     {
-        Task<Tuple<IList<VendedorDTO>, PagingInfo>> GetVendedores(PagingParameters parameters);
+        Task<PagingList<VendedorDTO>> GetVendedores(PagingParameters parameters);
         Task<VendedorDTO> GetById(int? id);
         Task<VendedorDTO> Add(VendedorDTO vendedorDto);
         Task Update(VendedorDTO vendedorDto);

@@ -7,8 +7,8 @@ namespace Loja.Application.Interfaces
 {
     public interface IProdutoService
     {
-        Task<Tuple<IList<ProdutoDTO>, PagingInfo>> GetProdutos(PagingParameters parameters);
-        Task<Tuple<IList<ProdutoDTO>, PagingInfo>> GetProdutos(PagingParameters parameters, Expression<Func<Produto, bool>> predicate);
+        Task<PagingList<ProdutoDTO>> GetProdutos(PagingParameters parameters);
+        Task<PagingList<ProdutoDTO>> GetProdutos(PagingParameters parameters, Expression<Func<Produto, bool>> predicate);
         Task<ProdutoDTO> GetById(int? id);
         Task<ProdutoDTO> GetByIdIncludeCategoria(int id);
         Task<ProdutoDTO> Add(ProdutoDTO produtoDto);

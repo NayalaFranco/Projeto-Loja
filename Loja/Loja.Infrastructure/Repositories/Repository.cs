@@ -2,6 +2,7 @@
 using Loja.Domain.PaginationEntities;
 using Loja.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 
 namespace Loja.Infrastructure.Repositories
@@ -33,13 +34,13 @@ namespace Loja.Infrastructure.Repositories
         /// </summary>
         /// <param name="parameters">Objeto com os parâmetros de paginação</param>
         /// <param name="orderByExpression">Lambda com a definição de ordenação da lista</param>
-        /// <returns>Retorna uma lista e os dados da paginação</returns>
-        public async Task<Tuple<IList<T>, PagingInfo>> GetAsync(PagingParameters parameters, Expression<Func<T, object>> orderByExpression)
+        /// <returns>Retorna um objeto PagingList com uma lista e os dados da paginação</returns>
+        public async Task<PagingList<T>> GetAsync(PagingParameters parameters)
         {
             var query = Get();
 
-            if (orderByExpression != null)
-                query = query.OrderBy(orderByExpression);
+            if (!string.IsNullOrEmpty(parameters.OrderedBy))
+                query = query.OrderBy($"{parameters.OrderedBy} asc");
 
             var count = await query.CountAsync();
             var items = await query
@@ -47,9 +48,9 @@ namespace Loja.Infrastructure.Repositories
                 .Take(parameters.PageSize)
                 .ToListAsync();
 
-            var pagingInfo = new PagingInfo(count, parameters.PageNumber, parameters.PageSize);
+            var pagingList = new PagingList<T>(items, count, parameters.PageNumber, parameters.PageSize);
 
-            return new Tuple<IList<T>, PagingInfo>(items, pagingInfo);
+            return pagingList;
         }
 
         /// <summary>
@@ -58,13 +59,13 @@ namespace Loja.Infrastructure.Repositories
         /// <param name="parameters">Objeto com os parâmetros de paginação</param>
         /// <param name="orderByExpression">Lambda com a definição de ordenação da lista</param>
         /// <param name="predicate">Delegate com o critério de busca.</param>
-        /// <returns>Retorna uma lista e os dados da paginação</returns>
-        public async Task<Tuple<IList<T>, PagingInfo>> GetAsync(PagingParameters parameters, Expression<Func<T, object>> orderByExpression, Expression<Func<T, bool>> predicate)
+        /// <returns>Retorna um objeto PagingList com uma lista e os dados da paginação</returns>
+        public async Task<PagingList<T>> GetAsync(PagingParameters parameters, Expression<Func<T, bool>> predicate)
         {
             var query = Get();
 
-            if (orderByExpression != null)
-                query = query.OrderBy(orderByExpression);
+            if (!string.IsNullOrEmpty(parameters.OrderedBy))
+                query = query.OrderBy($"{parameters.OrderedBy} asc");
 
             var count = await query.Where(predicate).CountAsync();
             var items = await query
@@ -72,9 +73,9 @@ namespace Loja.Infrastructure.Repositories
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                 .Take(parameters.PageSize).ToListAsync();
 
-            var pagingInfo = new PagingInfo(count, parameters.PageNumber, parameters.PageSize);
+            var pagingList = new PagingList<T>(items, count, parameters.PageNumber, parameters.PageSize);
 
-            return new Tuple<IList<T>, PagingInfo>(items, pagingInfo);
+            return pagingList;
         }
 
         /// <summary>

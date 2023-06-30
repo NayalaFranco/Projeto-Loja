@@ -25,13 +25,13 @@ namespace Loja.API.Controllers
         /// <param name="parameters">Parâmetros de paginação.</param>
         /// <returns>Retorna um Ok Object Result com a lista de produtos.</returns>
         [HttpGet]
-        public async Task<ActionResult<IList<ProdutoDTO>>> Get([FromQuery] PagingParameters parameters)
+        public async Task<ActionResult<List<ProdutoDTO>>> Get([FromQuery] PagingParameters parameters)
         {
-            var (produtos, pagingInfo) = await _produtoService.GetProdutos(parameters);
+            var pagingList = await _produtoService.GetProdutos(parameters);
 
-            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagingInfo));
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagingList.PaginationInfo));
 
-            return Ok(produtos);
+            return Ok(pagingList.Items);
         }
 
         /// <summary>
@@ -73,13 +73,13 @@ namespace Loja.API.Controllers
         /// <param name="categoriaId">Id da categoria.</param>
         /// <returns>Retorna um Ok Object Result com a lista de produtos.</returns>
         [HttpGet("GetByCategoriaId/{categoriaId}", Name = "GetByCategoriaId")]
-        public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetByCategoriaId([FromQuery] PagingParameters parameters, int categoriaId)
+        public async Task<ActionResult<List<ProdutoDTO>>> GetByCategoriaId([FromQuery] PagingParameters parameters, int categoriaId)
         {
-            var (produtos, pagingInfo) = await _produtoService.GetProdutos(parameters, x => x.CategoriaId == categoriaId);
+            var pagingList = await _produtoService.GetProdutos(parameters, x => x.CategoriaId == categoriaId);
 
-            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagingInfo));
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagingList.PaginationInfo));
 
-            return Ok(produtos);
+            return Ok(pagingList.Items);
         }
 
         /// <summary>

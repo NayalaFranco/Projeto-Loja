@@ -4,7 +4,6 @@ using Loja.Application.Interfaces;
 using Loja.Domain.Entities;
 using Loja.Domain.Interfaces;
 using Loja.Domain.PaginationEntities;
-using System.Linq.Expressions;
 
 namespace Loja.Application.Services
 {
@@ -35,30 +34,16 @@ namespace Loja.Application.Services
         /// Obtém uma lista de clientes.
         /// </summary>
         /// <param name="parameters">Objeto com os parâmetros de paginação</param>
-        /// <returns>Retorna uma tupla com uma lista de clientes e os dados de paginação</returns>
-        public async Task<Tuple<IList<ClienteDTO>, PagingInfo>> GetClientes(PagingParameters parameters)
+        /// <returns>Retorna um objeto PagingList com a lista de clientes e os dados de paginação</returns>
+        public async Task<PagingList<ClienteDTO>> GetClientes(PagingParameters parameters)
         {
-            Expression<Func<Cliente, Object>> orderByExpression;
-            switch (parameters.OrderedBy.ToLower())
-            {
-                case "name":
-                case "nome":
-                    orderByExpression = x => x.Nome;
-                    break;
-                case "data":
-                case "date":
-                    orderByExpression = x => x.DataCadastro;
-                    break;
-                default:
-                    orderByExpression = x => x.Id;
-                    break;
-            }
+            var pagingList = await _clienteRepository.GetAsync(parameters);
 
-            var (clientes, pagingInfo) = await _clienteRepository.GetAsync(parameters, orderByExpression);
+            var clientesDto = _mapper.Map<List<ClienteDTO>>(pagingList.Items);
 
-            var clientesDto = _mapper.Map<List<ClienteDTO>>(clientes);
+            var pagingListDto = new PagingList<ClienteDTO>(clientesDto, pagingList.PaginationInfo);
 
-            return new Tuple<IList<ClienteDTO>, PagingInfo>(clientesDto, pagingInfo);
+            return pagingListDto;
         }
 
         /// <summary>

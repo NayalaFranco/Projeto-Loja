@@ -3,6 +3,7 @@ using Loja.Domain.Interfaces;
 using Loja.Domain.PaginationEntities;
 using Loja.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 
 namespace Loja.Infrastructure.Repositories
@@ -14,18 +15,18 @@ namespace Loja.Infrastructure.Repositories
         }
 
         /// <summary>
-        /// Obtém ordens de forma assíncrona e inclui a lista de Produtos.
+        /// Busca ordens específicas de forma assíncrona e inclui a lista de Produtos.
         /// </summary>
         /// <param name="parameters">Parâmetros de paginação.</param>
         /// <param name="orderByExpression">Lambda com a definição de ordenação para a lista.</param>
         /// <param name="predicate">Delegate com os critérios de busca.</param>
-        /// <returns>Retorna uma tupla com as ordens e os dados da paginação</returns>
-        public async Task<Tuple<IList<Ordem>, PagingInfo>> GetOrdensAsync(PagingParameters parameters, Expression<Func<Ordem, object>> orderByExpression, Expression<Func<Ordem, bool>> predicate)
+        /// <returns>Retorna um objeto PagingList com a lista de ordens e os dados da paginação</returns>
+        public async Task<PagingList<Ordem>> GetOrdensAsync(PagingParameters parameters, Expression<Func<Ordem, bool>> predicate)
         {
             var query = Get();
 
-            if (orderByExpression != null)
-                query = query.OrderBy(orderByExpression);
+            if (!string.IsNullOrEmpty(parameters.OrderedBy))
+                query = query.OrderBy($"{parameters.OrderedBy} asc");
 
             var count = await query.Where(predicate).CountAsync();
             var items = await query
@@ -34,9 +35,9 @@ namespace Loja.Infrastructure.Repositories
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                 .Take(parameters.PageSize).ToListAsync();
 
-            var pagingInfo = new PagingInfo(count, parameters.PageNumber, parameters.PageSize);
+            var pagingList = new PagingList<Ordem>(items, count, parameters.PageNumber, parameters.PageSize);
 
-            return new Tuple<IList<Ordem>, PagingInfo>(items, pagingInfo);
+            return pagingList;
         }
 
         /// <summary>

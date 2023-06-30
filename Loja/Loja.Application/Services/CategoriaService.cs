@@ -4,7 +4,6 @@ using Loja.Application.Interfaces;
 using Loja.Domain.Entities;
 using Loja.Domain.Interfaces;
 using Loja.Domain.PaginationEntities;
-using System.Linq.Expressions;
 
 namespace Loja.Application.Services
 {
@@ -22,26 +21,16 @@ namespace Loja.Application.Services
         /// Obtém uma lista paginada de categorias.
         /// </summary>
         /// <param name="parameters">Objeto com os dados de paginação</param>
-        /// <returns>Retorna uma lista de CategoriaDTO.</returns>
-        public async Task<Tuple<IList<CategoriaDTO>, PagingInfo>> GetCategorias(PagingParameters parameters)
+        /// <returns>Retorna um objeto PagingList com a lista de categorias e os dados de paginação</returns>
+        public async Task<PagingList<CategoriaDTO>> GetCategorias(PagingParameters parameters)
         {
-            Expression<Func<Categoria, Object>> orderByExpression;
-            switch (parameters.OrderedBy.ToLower())
-            {
-                case "name":
-                case "nome":
-                    orderByExpression = x => x.Nome;
-                    break;
-                default:
-                    orderByExpression = x => x.Id;
-                    break;
-            }
+            var pagingList = await _categoriaRepository.GetAsync(parameters);
 
-            var (categorias, pagingInfo) = await _categoriaRepository.GetAsync(parameters, orderByExpression);
+            var categoriasDto = _mapper.Map<List<CategoriaDTO>>(pagingList.Items);
 
-            var categoriasDto = _mapper.Map<IList<CategoriaDTO>>(categorias);
+            var pagingListDto = new PagingList<CategoriaDTO>(categoriasDto, pagingList.PaginationInfo);
 
-            return new Tuple<IList<CategoriaDTO>, PagingInfo>(categoriasDto, pagingInfo);
+            return pagingListDto;
         }
 
         /// <summary>
