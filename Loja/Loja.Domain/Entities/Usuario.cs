@@ -8,6 +8,6 @@
         public string? Email { get; set; }
         public string? Telefone { get; set; }
         public ICollection<Ordem>? Ordens { get; set; }
-        public DateTime DataCadastro { get; protected set; }
+        public DateTime? DataCadastro { get; protected set; }
     }
 }

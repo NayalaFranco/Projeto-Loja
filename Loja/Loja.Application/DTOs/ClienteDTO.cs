@@ -33,7 +33,7 @@ namespace Loja.Application.DTOs
         public string Telefone { get; set; }
 
         [Required(ErrorMessage = "Informe a data do cadastro")]
-        public DateTime DataCadastro { get; set; }
+        public DateTime? DataCadastro { get; set; }
 
     }
 }

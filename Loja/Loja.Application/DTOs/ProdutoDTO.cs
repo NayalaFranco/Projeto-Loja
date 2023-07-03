@@ -34,7 +34,7 @@ namespace Loja.Application.DTOs
         public int Estoque { get; set; }
 
         [Required(ErrorMessage = "Informe a data do cadastro.")]
-        public DateTime DataCadastro { get; set; }
+        public DateTime? DataCadastro { get; set; }
 
         [Required(ErrorMessage = "Informe a ID de uma categoria.")]
         [Range(1, int.MaxValue, ErrorMessage = "A ID da categoria precisa estar entre 1 e 2147483647.")]

@@ -22,6 +22,6 @@ namespace Loja.Application.DTOs
 
         public decimal Total { get; set; }
         public EnumStatusVenda StatusVenda { get; set; }
-        public DateTime DataCriacao { get; set; }
+        public DateTime? DataCriacao { get; set; }
     }
 }

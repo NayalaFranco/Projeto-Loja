@@ -5,13 +5,13 @@ namespace Loja.Domain.Entities
 {
     public sealed class Ordem
     {
-        public Ordem(int vendedorId, int clienteId, decimal total, DateTime dataCriacao)
+        public Ordem(int vendedorId, int clienteId, decimal total, DateTime? dataCriacao)
         {
             VendedorId = vendedorId;
             ClienteId = clienteId;
             StatusVenda = EnumStatusVenda.AguardandoPagamento;
             Total = total;
-            DataCriacao = dataCriacao;
+            DataCriacao = (dataCriacao == null) ? DateTime.Now : dataCriacao;
         }
 
         public int Id { get; private set; }
@@ -28,7 +28,7 @@ namespace Loja.Domain.Entities
 
         public EnumStatusVenda StatusVenda { get; private set; }
 
-        public DateTime DataCriacao { get; private set; }
+        public DateTime? DataCriacao { get; private set; }
 
         /// <summary>
         /// Atualiza o status da ordem de venda se for válido.

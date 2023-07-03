@@ -126,8 +126,6 @@ namespace Loja.API.Controllers
 
             ordemNova.Total = total;
 
-            //ordemDto.DataCriacao = DateTime.Now;
-
             var ordemEntity = _mapper.Map<Ordem>(ordemNova);
 
             var ordemReturn = await _ordemService.Add(ordemEntity);

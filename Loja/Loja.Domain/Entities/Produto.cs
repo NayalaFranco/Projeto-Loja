@@ -4,18 +4,18 @@
     {
         public Produto(string nome, string descricao,
             decimal preco, string imagemUrl, int estoque,
-            DateTime dataCadastro, int categoriaId)
+            DateTime? dataCadastro, int categoriaId)
         {
             Nome = nome;
             Descricao = descricao;
             Preco = preco;
             ImagemUrl = imagemUrl;
             Estoque = estoque;
-            DataCadastro = dataCadastro;
+            DataCadastro = (dataCadastro == null) ? DateTime.Now : dataCadastro;
             CategoriaId = categoriaId;
         }
 
-        public DateTime DataCadastro { get; private set; }
+        public DateTime? DataCadastro { get; private set; }
         public string Descricao { get; private set; }
         public decimal Preco { get; private set; }
         public string ImagemUrl { get; private set; }
