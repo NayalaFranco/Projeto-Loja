@@ -269,6 +269,13 @@ namespace Loja.TestesUnitarios
                     total: 16.35M,
                     dataCriacao: DateTime.Parse("2023-06-03")
                     ));
+            context.Ordens.Add
+                (new Ordem(
+                    vendedorId: 1,
+                    clienteId: 2,
+                    total: 16.35M,
+                    dataCriacao: DateTime.Parse("2023-06-03")
+                    ));
 
             // OrdemProduto - Tabela de Junção
             // Ordem - 1
@@ -355,6 +362,17 @@ namespace Loja.TestesUnitarios
                     produtoId: 3,
                     nomeProduto: "Borracha branca pequena",
                     precoUnitario: 3.25M,
+                    quantidade: 1,
+                    desconto: 0
+                    ));
+
+            // Ordem - 2
+            context.OrdemProdutoJuncao.Add
+                (new OrdemProduto(
+                    ordemId: 4,
+                    produtoId: 1,
+                    nomeProduto: "Caderno espiral",
+                    precoUnitario: 7.45M,
                     quantidade: 1,
                     desconto: 0
                     ));
