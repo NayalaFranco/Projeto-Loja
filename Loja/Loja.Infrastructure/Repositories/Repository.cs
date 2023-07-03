@@ -40,7 +40,7 @@ namespace Loja.Infrastructure.Repositories
             var query = Get();
 
             if (!string.IsNullOrEmpty(parameters.OrderedBy))
-                query = query.OrderBy($"{parameters.OrderedBy} asc");
+                query = query.OrderBy($"{parameters.OrderedBy} {parameters.Direction}");
 
             var count = await query.CountAsync();
             var items = await query
@@ -65,7 +65,7 @@ namespace Loja.Infrastructure.Repositories
             var query = Get();
 
             if (!string.IsNullOrEmpty(parameters.OrderedBy))
-                query = query.OrderBy($"{parameters.OrderedBy} asc");
+                query = query.OrderBy($"{parameters.OrderedBy} {parameters.Direction}");
 
             var count = await query.Where(predicate).CountAsync();
             var items = await query
