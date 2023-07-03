@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using Loja.Application.DTOs;
-using Loja.Application.Interfaces;
+﻿using Loja.Application.Interfaces;
 using Loja.Domain.Entities;
 using Loja.Domain.Enums;
 using Loja.Domain.Interfaces;
@@ -12,25 +10,21 @@ namespace Loja.Application.Services
     public class OrdemService : IOrdemService
     {
         private readonly IOrdemRepository _ordemRepository;
-        private readonly IMapper _mapper;
-        public OrdemService(IMapper mapper, IOrdemRepository ordemRepository)
+        public OrdemService(IOrdemRepository ordemRepository)
         {
             _ordemRepository = ordemRepository ??
                 throw new ArgumentNullException(nameof(ordemRepository));
-
-            _mapper = mapper;
-
         }
 
         /// <summary>
         /// Obtém uma ordem pelo Id.
         /// </summary>
         /// <param name="id">Id da Ordem.</param>
-        /// <returns>Retorna uma OrdemDTO.</returns>
-        public async Task<OrdemDTO> GetById(int? id)
+        /// <returns>Retorna uma Ordem.</returns>
+        public async Task<Ordem> GetById(int? id)
         {
             var ordemEntity = await _ordemRepository.GetByIdAsync(x => x.Id == id);
-            return _mapper.Map<OrdemDTO>(ordemEntity);
+            return ordemEntity;
         }
 
         /// <summary>
@@ -38,10 +32,10 @@ namespace Loja.Application.Services
         /// </summary>
         /// <param name="id">Id da Ordem.</param>
         /// <returns>Retorna uma Ordem com os Produtos inclusos.</returns>
-        public async Task<OrdemDTO> GetOrdemComProdutosById(int? id)
+        public async Task<Ordem> GetOrdemComProdutosById(int? id)
         {
             var ordemEntity = await _ordemRepository.GetOrdemByIdIncluiProdutoAsync(x => x.Id == id);
-            return _mapper.Map<OrdemDTO>(ordemEntity);
+            return ordemEntity;
         }
 
         /// <summary>
@@ -49,15 +43,11 @@ namespace Loja.Application.Services
         /// </summary>
         /// <param name="parameters">Objeto com os parâmetros de paginação</param>
         /// <returns>Retorna um objeto PagingList com a lista de Ordens e os dados de paginação</returns>
-        public async Task<PagingList<OrdemDTO>> GetOrdens(PagingParameters parameters)
+        public async Task<PagingList<Ordem>> GetOrdens(PagingParameters parameters)
         {
             var pagingList = await _ordemRepository.GetAsync(parameters);
 
-            var ordensDto = _mapper.Map<List<OrdemDTO>>(pagingList.Items);
-
-            var pagingListDto = new PagingList<OrdemDTO>(ordensDto, pagingList.PaginationInfo);
-
-            return pagingListDto;
+            return pagingList;
         }
 
         /// <summary>
@@ -67,27 +57,22 @@ namespace Loja.Application.Services
         /// <param name="parameters">Objeto com os parâmetros de paginação</param>
         /// <param name="predicate">Delegate com o critério de busca</param>
         /// <returns>Retorna um objeto PagingList com a lista de Ordens e os dados de paginação</returns>
-        public async Task<PagingList<OrdemDTO>> GetOrdens(PagingParameters parameters, Expression<Func<Ordem, bool>> predicate)
+        public async Task<PagingList<Ordem>> GetOrdens(PagingParameters parameters, Expression<Func<Ordem, bool>> predicate)
         {
             var pagingList = await _ordemRepository.GetAsync(parameters);
 
-            var ordensDto = _mapper.Map<List<OrdemDTO>>(pagingList.Items);
-
-            var pagingListDto = new PagingList<OrdemDTO>(ordensDto, pagingList.PaginationInfo);
-
-            return pagingListDto;
+            return pagingList;
         }
 
         /// <summary>
         /// Adiciona uma ordem à tabela do banco de dados.
         /// </summary>
-        /// <param name="ordemDto">Objeto com os dados da ordem a ser adicionada.</param>
+        /// <param name="ordemNova">Objeto com os dados da ordem a ser adicionada.</param>
         /// <returns>Retorna a ordem adicionada.</returns>
-        public async Task<OrdemDTO> Add(OrdemDTO ordemDto)
+        public async Task<Ordem> Add(Ordem ordemNova)
         {
-            var ordemEntity = _mapper.Map<Ordem>(ordemDto);
-            var ordem = await _ordemRepository.CreateAsync(ordemEntity);
-            return _mapper.Map<OrdemDTO>(ordem);
+            var ordem = await _ordemRepository.CreateAsync(ordemNova);
+            return ordem;
         }
 
         /// <summary>
@@ -96,25 +81,26 @@ namespace Loja.Application.Services
         /// <param name="id">Id da Ordem.</param>
         /// <param name="statusVenda">Novo status.</param>
         /// <returns>Retorna a ordem atualizada.</returns>
-        public async Task<OrdemDTO> UpdateStatus(int id, EnumStatusVenda statusVenda)
+        public async Task<Ordem> UpdateStatus(int id, EnumStatusVenda statusVenda)
         {
             Ordem ordem = _ordemRepository.GetByIdAsync(x => x.Id == id).Result;
 
             ordem.UpdateStatus(statusVenda);
 
-            var ordemEntity = _mapper.Map<Ordem>(ordem);
-            await _ordemRepository.UpdateAsync(ordem);
-            return _mapper.Map<OrdemDTO>(ordem);
+            var ordemAtualizada = await _ordemRepository.UpdateAsync(ordem);
+            return ordemAtualizada;
         }
 
         /// <summary>
         /// Remove uma ordem do banco de dados.
         /// </summary>
         /// <param name="id">Id da ordem.</param>
-        /// <returns></returns>
         public async Task Remove(int? id)
         {
             var ordemEntity = _ordemRepository.GetByIdAsync(x => x.Id == id).Result;
+            if (ordemEntity == null)
+                return;
+
             await _ordemRepository.RemoveAsync(ordemEntity);
         }
     }

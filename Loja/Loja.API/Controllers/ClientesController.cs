@@ -1,5 +1,7 @@
-﻿using Loja.Application.DTOs;
+﻿using AutoMapper;
+using Loja.Application.DTOs;
 using Loja.Application.Interfaces;
+using Loja.Domain.Entities;
 using Loja.Domain.PaginationEntities;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
@@ -13,9 +15,11 @@ namespace Loja.API.Controllers
     public class ClientesController : ControllerBase
     {
         private readonly IClienteService _clienteService;
-        public ClientesController(IClienteService clienteService)
+        private readonly IMapper _mapper;
+        public ClientesController(IMapper mapper, IClienteService clienteService)
         {
             _clienteService = clienteService;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -28,9 +32,11 @@ namespace Loja.API.Controllers
         {
             var pagingList = await _clienteService.GetClientes(parameters);
 
+            var clientesDto = _mapper.Map<List<ClienteDTO>>(pagingList.Items);
+
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagingList.PaginationInfo));
 
-            return Ok(pagingList.Items);
+            return Ok(clientesDto);
         }
 
         /// <summary>
@@ -46,56 +52,58 @@ namespace Loja.API.Controllers
             if (cliente == null)
                 return NotFound();
 
-            return Ok(cliente);
+            var clienteDto = _mapper.Map<ClienteDTO>(cliente);
+
+            return Ok(clienteDto);
         }
 
         /// <summary>
         /// Cria um cliente.
         /// </summary>
-        /// <param name="clienteDto">Objeto com os dados do cliente.</param>
+        /// <param name="clienteNovo">Objeto com os dados do cliente.</param>
         /// <returns>Retorna o cliente criado.</returns>
         [HttpPost]
-        public async Task<ActionResult> Post(ClienteDTO clienteDto)
+        public async Task<ActionResult> Post(ClienteDTO clienteNovo)
         {
+            var clienteEntity = _mapper.Map<Cliente>(clienteNovo);
 
-            var clienteReturn = await _clienteService.Add(clienteDto);
+            var clienteReturn = await _clienteService.Add(clienteEntity);
+
+            var clienteDto = _mapper.Map<ClienteDTO>(clienteReturn);
 
             return new CreatedAtRouteResult("GetCliente",
-                new { id = clienteDto.Id }, clienteReturn);
+                new { id = clienteNovo.Id }, clienteDto);
         }
 
         /// <summary>
         /// Atualiza um cliente.
         /// </summary>
-        /// <param name="id">Id do cliente.</param>
-        /// <param name="clienteDto">Objeto com os dados do cliente</param>
+        /// <param name="id">Id do cliente para confirmação.</param>
+        /// <param name="clienteUpdate">Objeto com os dados do cliente</param>
         /// <returns>Retorna um Ok Object Result com o cliente atualizado.</returns>
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, ClienteDTO clienteDto)
+        public async Task<ActionResult> Put(int id, ClienteDTO clienteUpdate)
         {
-            if (id != clienteDto.Id)
-                return BadRequest();
+            if (id != clienteUpdate.Id)
+                return BadRequest("A Id informada e a Id do objeto precisam ser as mesmas.");
 
-            await _clienteService.Update(clienteDto);
+            var clienteEntity = _mapper.Map<Cliente>(clienteUpdate);
 
-            return Ok(clienteDto);
+            await _clienteService.Update(clienteEntity);
+
+            return Ok(clienteUpdate);
         }
 
         /// <summary>
         /// Deleta um cliente.
         /// </summary>
         /// <param name="id">Id do cliente.</param>
-        /// <returns>Retorna um Ok Object Result com o cliente deletado.</returns>
+        /// <returns>Retorna um Ok Result.</returns>
         [HttpDelete("{id}")]
         public async Task<ActionResult<ClienteDTO>> Delete(int id)
         {
-            var clienteDto = await _clienteService.GetById(id);
-
-            if (clienteDto == null)
-                return NotFound();
-
             await _clienteService.Remove(id);
-            return Ok(clienteDto);
+            return Ok();
         }
     }
 }

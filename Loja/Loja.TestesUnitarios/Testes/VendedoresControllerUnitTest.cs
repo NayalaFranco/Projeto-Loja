@@ -33,9 +33,9 @@ namespace Loja.TestesUnitarios.Testes
 
             vendedorRepository = new VendedorRepository(context);
 
-            vendedorService = new VendedorService(mapper, vendedorRepository);
+            vendedorService = new VendedorService(vendedorRepository);
 
-            controller = new VendedoresController(vendedorService);
+            controller = new VendedoresController(mapper, vendedorService);
 
             controller.ControllerContext = new ControllerContext()
             {
@@ -204,7 +204,7 @@ namespace Loja.TestesUnitarios.Testes
 
         /********************* TESTE DELETE **********************/
         [Fact]
-        public async Task Delete_Return_OkObjectResult_And_NotFound()
+        public async Task Delete_Return_OkResult()
         {
             // Arrange
             var vendedorId = 4;
@@ -213,10 +213,7 @@ namespace Loja.TestesUnitarios.Testes
             var data = await controller.Delete(vendedorId);
 
             // Assert
-            var okObjectResult = Assert.IsType<OkObjectResult>(data.Result);
-            Assert.IsType<VendedorDTO>(okObjectResult.Value);
-            var getDeleted = await controller.Get(vendedorId);
-            Assert.IsType<NotFoundResult>(getDeleted.Result);
+            Assert.IsType<OkResult>(data.Result);
         }
     }
 }

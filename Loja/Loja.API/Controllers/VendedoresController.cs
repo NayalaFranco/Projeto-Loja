@@ -1,5 +1,7 @@
-﻿using Loja.Application.DTOs;
+﻿using AutoMapper;
+using Loja.Application.DTOs;
 using Loja.Application.Interfaces;
+using Loja.Domain.Entities;
 using Loja.Domain.PaginationEntities;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
@@ -12,9 +14,11 @@ namespace Loja.API.Controllers
     public class VendedoresController : ControllerBase
     {
         private readonly IVendedorService _vendedorService;
-        public VendedoresController(IVendedorService vendedorService)
+        private readonly IMapper _mapper;
+        public VendedoresController(IMapper mapper, IVendedorService vendedorService)
         {
             _vendedorService = vendedorService;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -27,9 +31,11 @@ namespace Loja.API.Controllers
         {
             var pagingList = await _vendedorService.GetVendedores(parameters);
 
+            var vendedoresDto = _mapper.Map<List<VendedorDTO>>(pagingList.Items);
+
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagingList.PaginationInfo));
 
-            return Ok(pagingList.Items);
+            return Ok(vendedoresDto);
         }
 
         /// <summary>
@@ -45,56 +51,58 @@ namespace Loja.API.Controllers
             if (vendedor == null)
                 return NotFound();
 
-            return Ok(vendedor);
+            var vendedorDto = _mapper.Map<VendedorDTO>(vendedor);
+
+            return Ok(vendedorDto);
         }
 
         /// <summary>
         /// Cria um vendedor.
         /// </summary>
-        /// <param name="vendedorDto">Objeto com os dados do vendedor.</param>
+        /// <param name="vendedorNovo">Objeto com os dados do vendedor.</param>
         /// <returns>Retorna o vendedor criado.</returns>
         [HttpPost]
-        public async Task<ActionResult> Post(VendedorDTO vendedorDto)
+        public async Task<ActionResult> Post(VendedorDTO vendedorNovo)
         {
+            var vendedorEntity = _mapper.Map<Vendedor>(vendedorNovo);
 
-            var vendedorReturn = await _vendedorService.Add(vendedorDto);
+            var vendedorReturn = await _vendedorService.Add(vendedorEntity);
+
+            var vendedorDto = _mapper.Map<VendedorDTO>(vendedorReturn);
 
             return new CreatedAtRouteResult("GetVendedor",
-                new { id = vendedorDto.Id }, vendedorReturn);
+                new { id = vendedorNovo.Id }, vendedorDto);
         }
 
         /// <summary>
         /// Atualiza um vendedor.
         /// </summary>
-        /// <param name="id">Id do vendedor.</param>
-        /// <param name="vendedorDto">Objeto com os dados atualizados do vendedor.</param>
+        /// <param name="id">Id do vendedor para confirmação.</param>
+        /// <param name="vendedorUpdate">Objeto com os dados atualizados do vendedor.</param>
         /// <returns>Retorna o vendedor atualizado.</returns>
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, VendedorDTO vendedorDto)
+        public async Task<ActionResult> Put(int id, VendedorDTO vendedorUpdate)
         {
-            if (id != vendedorDto.Id)
-                return BadRequest();
+            if (id != vendedorUpdate.Id)
+                return BadRequest("A Id informada e a Id do objeto precisam ser as mesmas.");
 
-            await _vendedorService.Update(vendedorDto);
+            var vendedorEntity = _mapper.Map<Vendedor>(vendedorUpdate);
 
-            return Ok(vendedorDto);
+            await _vendedorService.Update(vendedorEntity);
+
+            return Ok(vendedorUpdate);
         }
 
         /// <summary>
         /// Deleta um vendedor.
         /// </summary>
         /// <param name="id">Id do vendedor.</param>
-        /// <returns>Retorna oum Ok Object Result com o vendedor deletado.</returns>
+        /// <returns>Retorna um Ok Result.</returns>
         [HttpDelete("{id}")]
         public async Task<ActionResult<VendedorDTO>> Delete(int id)
         {
-            var vendedorDto = await _vendedorService.GetById(id);
-
-            if (vendedorDto == null)
-                return NotFound();
-
             await _vendedorService.Remove(id);
-            return Ok(vendedorDto);
+            return Ok();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Loja.Application.DTOs;
+﻿using AutoMapper;
+using Loja.Application.DTOs;
 using Loja.Application.Interfaces;
 using Loja.Domain.Entities;
 using Loja.Domain.PaginationEntities;
@@ -13,9 +14,11 @@ namespace Loja.API.Controllers
     public class CategoriasController : ControllerBase
     {
         private readonly ICategoriaService _categoriaService;
-        public CategoriasController(ICategoriaService categoriaService)
+        private readonly IMapper _mapper;
+        public CategoriasController(IMapper mapper, ICategoriaService categoriaService)
         {
             _categoriaService = categoriaService;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -28,9 +31,11 @@ namespace Loja.API.Controllers
         {
             var pagingList = await _categoriaService.GetCategorias(parameters);
 
+            var categoriasDto = _mapper.Map<List<CategoriaDTO>>(pagingList.Items);
+
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagingList.PaginationInfo));
 
-            return Ok(pagingList.Items);
+            return Ok(categoriasDto);
 
         }
 
@@ -47,53 +52,58 @@ namespace Loja.API.Controllers
             if (categoria == null)
                 return NotFound();
 
-            return Ok(categoria);
+            var categoriaDto = _mapper.Map<CategoriaDTO>(categoria);
+
+            return Ok(categoriaDto);
         }
 
         /// <summary>
         /// Cria uma categoria.
         /// </summary>
-        /// <param name="categoriaDto">Objeto com os dados da categoria.</param>
+        /// <param name="categoriaNova">Objeto com os dados da categoria.</param>
         /// <returns>Retorna a categoria criada.</returns>
         [HttpPost]
-        public async Task<ActionResult> Post(CategoriaDTO categoriaDto)
+        public async Task<ActionResult> Post(CategoriaDTO categoriaNova)
         {
-            var categoriaReturn = await _categoriaService.Add(categoriaDto);
+            var categoriaEntity = _mapper.Map<Categoria>(categoriaNova);
+
+            var categoriaReturn = await _categoriaService.Add(categoriaEntity);
+
+            var categoriaDto = _mapper.Map<CategoriaDTO>(categoriaReturn);
 
             return new CreatedAtRouteResult("GetCategoria",
-                new { id = categoriaDto.Id }, categoriaReturn);
+                new { id = categoriaNova.Id }, categoriaDto);
         }
 
         /// <summary>
         /// Atualiza uma categoria.
         /// </summary>
-        /// <param name="id">Id da categoria a ser atualizada.</param>
-        /// <param name="categoriaDto">Objeto CategoriaDTO com os novos dados.</param>
+        /// <param name="id">Id da categoria a ser atualizada para confirmação.</param>
+        /// <param name="categoriaUpdate">Objeto CategoriaDTO com os novos dados.</param>
         /// <returns>Retorna um Ok Object Result com a categoria atualizada.</returns>
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, CategoriaDTO categoriaDto)
+        public async Task<ActionResult> Put(int id, CategoriaDTO categoriaUpdate)
         {
-            if (id != categoriaDto.Id)
-                return NoContent();
+            if (id != categoriaUpdate.Id)
+                return BadRequest("A Id informada e a Id do objeto precisam ser as mesmas.");
 
-            await _categoriaService.Update(categoriaDto);
-            return Ok(categoriaDto);
+            var categoriaEntity = _mapper.Map<Categoria>(categoriaUpdate);
+
+            await _categoriaService.Update(categoriaEntity);
+
+            return Ok(categoriaUpdate);
         }
 
         /// <summary>
         /// Deleta uma categoria.
         /// </summary>
         /// <param name="id">Id da categoria.</param>
-        /// <returns>Retorna um Ok Object Result com a categoria que foi deletada.</returns>
+        /// <returns>Retorna um Ok Result confirmando que a categoria que foi deletada.</returns>
         [HttpDelete("{id}")]
         public async Task<ActionResult<Categoria>> Delete(int id)
         {
-            var categoriaDto = await _categoriaService.GetById(id);
-            if (categoriaDto == null)
-                return NotFound();
-
             await _categoriaService.Remove(id);
-            return Ok(categoriaDto);
+            return Ok();
         }
     }
 }

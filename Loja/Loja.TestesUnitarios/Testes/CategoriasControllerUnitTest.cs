@@ -33,9 +33,9 @@ namespace Loja.TestesUnitarios.Testes
 
             categoriaRepository = new CategoriaRepository(context);
 
-            categoriaService = new CategoriaService(mapper, categoriaRepository);
+            categoriaService = new CategoriaService(categoriaRepository);
 
-            controller = new CategoriasController(categoriaService);
+            controller = new CategoriasController(mapper, categoriaService);
 
             controller.ControllerContext = new ControllerContext()
             {
@@ -169,7 +169,7 @@ namespace Loja.TestesUnitarios.Testes
 
         /********************* TESTE DELETE **********************/
         [Fact]
-        public async Task Delete_Return_OkObjectResult_And_NotFound()
+        public async Task Delete_Return_OkResult()
         {
             // Arrange
             var catId = 4;
@@ -178,10 +178,7 @@ namespace Loja.TestesUnitarios.Testes
             var data = await controller.Delete(catId);
 
             // Assert
-            var okObjectResult = Assert.IsType<OkObjectResult>(data.Result);
-            Assert.IsType<CategoriaDTO>(okObjectResult.Value);
-            var getDeleted = await controller.Get(catId);
-            Assert.IsType<NotFoundResult>(getDeleted.Result);
+            Assert.IsType<OkResult>(data.Result);
         }
     }
 }

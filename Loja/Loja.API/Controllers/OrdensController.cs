@@ -1,4 +1,5 @@
-﻿using Loja.Application.DTOs;
+﻿using AutoMapper;
+using Loja.Application.DTOs;
 using Loja.Application.Interfaces;
 using Loja.Domain.Entities;
 using Loja.Domain.Enums;
@@ -18,14 +19,16 @@ namespace Loja.API.Controllers
         private readonly IProdutoService _produtoService;
         private readonly IClienteService _clienteService;
         private readonly IVendedorService _vendedorService;
+        private readonly IMapper _mapper;
 
-        public OrdensController(IOrdemService ordemService, IProdutoService produtoService,
+        public OrdensController(IMapper mapper, IOrdemService ordemService, IProdutoService produtoService,
             IClienteService clienteService, IVendedorService vendedorService)
         {
             _ordemService = ordemService;
             _produtoService = produtoService;
             _clienteService = clienteService;
             _vendedorService = vendedorService;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -42,7 +45,9 @@ namespace Loja.API.Controllers
             if (ordem is null)
                 return NotFound();
 
-            return Ok(ordem);
+            var ordemDto = _mapper.Map<OrdemDTO>(ordem);
+
+            return Ok(ordemDto);
         }
 
         /// <summary>
@@ -55,9 +60,11 @@ namespace Loja.API.Controllers
         {
             var pagingList = await _ordemService.GetOrdens(parameters);
 
+            var ordensDto = _mapper.Map<List<OrdemDTO>>(pagingList.Items);
+
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagingList.PaginationInfo));
 
-            return Ok(pagingList.Items);
+            return Ok(ordensDto);
         }
 
         /// <summary>
@@ -65,15 +72,16 @@ namespace Loja.API.Controllers
         /// </summary>
         /// <param name="parameters">Parâmetros de paginação.</param>
         /// <param name="clienteId">Id do cliente.</param>
-        /// <returns></returns>
         [HttpGet("Cliente/{clienteId}", Name = "GetOrdensCliente")]
         public async Task<ActionResult<OrdemDTO>> GetOrdensCliente([FromQuery] PagingParameters parameters, int clienteId)
         {
             var pagingList = await _ordemService.GetOrdens(parameters, x => x.ClienteId == clienteId);
 
+            var ordensDto = _mapper.Map<List<OrdemDTO>>(pagingList.Items);
+
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagingList.PaginationInfo));
 
-            return Ok(pagingList.Items);
+            return Ok(ordensDto);
         }
 
         /// <summary>
@@ -87,41 +95,47 @@ namespace Loja.API.Controllers
         {
             var pagingList = await _ordemService.GetOrdens(parameters, x => x.VendedorId == vendedorId);
 
+            var ordensDto = _mapper.Map<List<OrdemDTO>>(pagingList.Items);
+
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagingList.PaginationInfo));
 
-            return Ok(pagingList.Items);
+            return Ok(ordensDto);
         }
 
         /// <summary>
         /// Cria uma nova ordem de venda.
         /// </summary>
-        /// <param name="ordemDto">Objeto com os dados da ordem a ser criada.</param>
+        /// <param name="ordemNova">Objeto com os dados da ordem a ser criada.</param>
         /// <returns>Retorna a Ordem criada.</returns>
         [HttpPost]
-        public async Task<ActionResult> Post(OrdemDTO ordemDto)
+        public async Task<ActionResult> Post(OrdemDTO ordemNova)
         {
             // TODO
             // Jogar essas validações para as camadas de serviço ou domain.
-            if (ordemDto.Produtos.IsNullOrEmpty())
+            if (ordemNova.Produtos.IsNullOrEmpty())
                 return BadRequest("É necessário ter algum produto na lista.");
 
-            await ValidaVendedorCliente(ordemDto);
+            await ValidaVendedorCliente(ordemNova);
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            decimal total = await CalcularTotal(ordemDto);
+            decimal total = await CalcularTotal(ordemNova);
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             //
 
-            ordemDto.Total = total;
+            ordemNova.Total = total;
 
-            ordemDto.DataCriacao = DateTime.Now;
+            //ordemDto.DataCriacao = DateTime.Now;
 
-            var ordemReturn = await _ordemService.Add(ordemDto);
+            var ordemEntity = _mapper.Map<Ordem>(ordemNova);
+
+            var ordemReturn = await _ordemService.Add(ordemEntity);
+
+            var ordemDto = _mapper.Map<OrdemDTO>(ordemReturn);
 
             return new CreatedAtRouteResult("GetById",
-                new { id = ordemDto.Id }, ordemReturn);
+                new { id = ordemNova.Id }, ordemDto);
         }
 
         /// <summary>
@@ -133,7 +147,10 @@ namespace Loja.API.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, EnumStatusVenda statusVenda)
         {
-            var ordemDto = await _ordemService.UpdateStatus(id, statusVenda);
+            var ordem = await _ordemService.UpdateStatus(id, statusVenda);
+
+            var ordemDto = _mapper.Map<OrdemDTO>(ordem);
+
             return Ok(ordemDto);
         }
 
@@ -141,16 +158,12 @@ namespace Loja.API.Controllers
         /// Deleta uma ordem.
         /// </summary>
         /// <param name="id">Id da ordem.</param>
-        /// <returns>Retorna um Ok Object Result com a ordem deletada</returns>
+        /// <returns>Retorna um Ok Result</returns>
         [HttpDelete("{id}")]
         public async Task<ActionResult<Ordem>> Delete(int id)
         {
-            var ordemDto = await _ordemService.GetById(id);
-            if (ordemDto == null)
-                return NotFound();
-
             await _ordemService.Remove(id);
-            return Ok(ordemDto);
+            return Ok();
         }
 
         private async Task ValidaVendedorCliente(OrdemDTO ordemDto)

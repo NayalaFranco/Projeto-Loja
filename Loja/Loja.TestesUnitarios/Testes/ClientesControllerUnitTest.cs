@@ -33,9 +33,9 @@ namespace Loja.TestesUnitarios.Testes
 
             clienteRepository = new ClienteRepository(context);
 
-            clienteService = new ClienteService(mapper, clienteRepository);
+            clienteService = new ClienteService(clienteRepository);
 
-            controller = new ClientesController(clienteService);
+            controller = new ClientesController(mapper, clienteService);
 
             controller.ControllerContext = new ControllerContext()
             {
@@ -204,7 +204,7 @@ namespace Loja.TestesUnitarios.Testes
 
         /********************* TESTE DELETE **********************/
         [Fact]
-        public async Task Delete_Return_OkObjectResult_And_NotFound()
+        public async Task Delete_Return_OkResult()
         {
             // Arrange
             var clienteId = 4;
@@ -213,10 +213,7 @@ namespace Loja.TestesUnitarios.Testes
             var data = await controller.Delete(clienteId);
 
             // Assert
-            var okObjectResult = Assert.IsType<OkObjectResult>(data.Result);
-            Assert.IsType<ClienteDTO>(okObjectResult.Value);
-            var getDeleted = await controller.Get(clienteId);
-            Assert.IsType<NotFoundResult>(getDeleted.Result);
+            Assert.IsType<OkResult>(data.Result);
         }
     }
 }

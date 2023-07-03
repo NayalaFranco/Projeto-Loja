@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using Loja.Application.DTOs;
-using Loja.Application.Interfaces;
+﻿using Loja.Application.Interfaces;
 using Loja.Domain.Entities;
 using Loja.Domain.Interfaces;
 using Loja.Domain.PaginationEntities;
@@ -10,24 +8,21 @@ namespace Loja.Application.Services
     public class VendedorService : IVendedorService
     {
         private readonly IVendedorRepository _vendedorRepository;
-        private readonly IMapper _mapper;
-        public VendedorService(IMapper mapper, IVendedorRepository vendedorRepository)
+        public VendedorService(IVendedorRepository vendedorRepository)
         {
             _vendedorRepository = vendedorRepository ??
                 throw new ArgumentNullException(nameof(vendedorRepository));
-
-            _mapper = mapper;
         }
 
         /// <summary>
         /// Obtém um vendedor pelo Id.
         /// </summary>
         /// <param name="id">Id do vendedor.</param>
-        /// <returns>Retorna um objeto VendedorDTO</returns>
-        public async Task<VendedorDTO> GetById(int? id)
+        /// <returns>Retorna um objeto Vendedor</returns>
+        public async Task<Vendedor> GetById(int? id)
         {
             var vendedorEntity = await _vendedorRepository.GetByIdAsync(x => x.Id == id);
-            return _mapper.Map<VendedorDTO>(vendedorEntity);
+            return vendedorEntity;
         }
 
         /// <summary>
@@ -35,49 +30,44 @@ namespace Loja.Application.Services
         /// </summary>
         /// <param name="parameters">Objeto com os parâmetros de paginação</param>
         /// <returns>Retorna um objeto PagingList com a lista de vendedores e os dados de paginação</returns>
-        public async Task<PagingList<VendedorDTO>> GetVendedores(PagingParameters parameters)
+        public async Task<PagingList<Vendedor>> GetVendedores(PagingParameters parameters)
         {
             var pagingList = await _vendedorRepository.GetAsync(parameters);
 
-            var vendedorDto = _mapper.Map<List<VendedorDTO>>(pagingList.Items);
-
-            var pagingListDto = new PagingList<VendedorDTO>(vendedorDto, pagingList.PaginationInfo);
-
-            return pagingListDto;
+            return pagingList;
         }
 
         /// <summary>
         /// Adiciona um vendedor à tabela do banco de dados.
         /// </summary>
-        /// <param name="vendedorDto">Objeto com os dados do vendedor a ser adicionado</param>
+        /// <param name="vendedorNovo">Objeto com os dados do vendedor a ser adicionado</param>
         /// <returns>Retorna o vendedor adicionado</returns>
-        public async Task<VendedorDTO> Add(VendedorDTO vendedorDto)
+        public async Task<Vendedor> Add(Vendedor vendedorNovo)
         {
-            var vendedorEntity = _mapper.Map<Vendedor>(vendedorDto);
-            var vendedor = await _vendedorRepository.CreateAsync(vendedorEntity);
-            return _mapper.Map<VendedorDTO>(vendedor);
+            var vendedor = await _vendedorRepository.CreateAsync(vendedorNovo);
+            return vendedor;
         }
 
         /// <summary>
         /// Remove um vendedor do banco de dados.
         /// </summary>
         /// <param name="id">Id do vendedor</param>
-        /// <returns></returns>
         public async Task Remove(int? id)
         {
             var vendedorEntity = _vendedorRepository.GetByIdAsync(x => x.Id == id).Result;
+            if (vendedorEntity == null)
+                return;
+
             await _vendedorRepository.RemoveAsync(vendedorEntity);
         }
 
         /// <summary>
         /// Atualiza um vendedor
         /// </summary>
-        /// <param name="vendedorDto">Objeto com os dados do vendedor a ser atualizado.</param>
-        /// <returns></returns>
-        public async Task Update(VendedorDTO vendedorDto)
+        /// <param name="vendedor">Objeto com os dados do vendedor a ser atualizado.</param>
+        public async Task Update(Vendedor vendedor)
         {
-            var vendedorEntity = _mapper.Map<Vendedor>(vendedorDto);
-            await _vendedorRepository.UpdateAsync(vendedorEntity);
+            await _vendedorRepository.UpdateAsync(vendedor);
         }
     }
 }

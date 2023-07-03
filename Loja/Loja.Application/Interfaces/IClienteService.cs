@@ -1,14 +1,14 @@
-﻿using Loja.Application.DTOs;
+﻿using Loja.Domain.Entities;
 using Loja.Domain.PaginationEntities;
 
 namespace Loja.Application.Interfaces
 {
     public interface IClienteService
     {
-        Task<PagingList<ClienteDTO>> GetClientes(PagingParameters parameters);
-        Task<ClienteDTO> GetById(int? id);
-        Task<ClienteDTO> Add(ClienteDTO clienteDto);
-        Task Update(ClienteDTO clienteDto);
+        Task<PagingList<Cliente>> GetClientes(PagingParameters parameters);
+        Task<Cliente> GetById(int? id);
+        Task<Cliente> Add(Cliente clienteNovo);
+        Task Update(Cliente cliente);
         Task Remove(int? id);
     }
 }
