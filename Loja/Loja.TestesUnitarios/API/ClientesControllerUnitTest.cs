@@ -1,4 +1,4 @@
-namespace Loja.TestesUnitarios.Testes
+namespace Loja.TestesUnitarios.API
 {
     public class ClientesControllerUnitTest
     {

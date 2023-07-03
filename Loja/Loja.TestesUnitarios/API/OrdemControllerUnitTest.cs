@@ -1,7 +1,7 @@
 using Loja.Domain.Enums;
 using Loja.Domain.Validation;
 
-namespace Loja.TestesUnitarios.Testes
+namespace Loja.TestesUnitarios.API
 {
     public class OrdensControllerUnitTest
     {
@@ -242,7 +242,7 @@ namespace Loja.TestesUnitarios.Testes
         public async Task Put_Update_StatusVenda_Return_OkObjectResult()
         {
             // Arrange
-            var ordemId = 1;
+            int ordemId = 3;
             var status = EnumStatusVenda.PagamentoAprovado;
 
             // Act
@@ -253,8 +253,8 @@ namespace Loja.TestesUnitarios.Testes
             // Assert
             var okObjResult = Assert.IsType<OkObjectResult>(updatedData);
             var updatedOrdem = okObjResult.Value.Should().BeAssignableTo<OrdemDTO>().Subject;
-            Assert.Equal(1, updatedOrdem.Id);
-            Assert.Equal(5526.63M, updatedOrdem.Total);
+            Assert.Equal(ordemId, updatedOrdem.Id);
+            Assert.Equal(16.35M, updatedOrdem.Total);
 
             Assert.Equal(status, updatedOrdem.StatusVenda);
         }
@@ -277,7 +277,7 @@ namespace Loja.TestesUnitarios.Testes
         public async Task Delete_Return_OkResult()
         {
             // Arrange
-            var ordemId = 3;
+            var ordemId = 4;
 
             // Act
             var data = await controller.Delete(ordemId);
