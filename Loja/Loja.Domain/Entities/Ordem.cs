@@ -1,5 +1,4 @@
 ﻿using Loja.Domain.Enums;
-using Loja.Domain.Validation;
 
 namespace Loja.Domain.Entities
 {
@@ -34,33 +33,37 @@ namespace Loja.Domain.Entities
         /// Atualiza o status da ordem de venda se for válido.
         /// </summary>
         /// <param name="statusNovo">Novo status a ser inserido</param>
-        public void UpdateStatus(EnumStatusVenda statusNovo)
+        /// <returns>true para transição válida, false para inválida</returns>
+        public bool UpdateStatus(EnumStatusVenda statusNovo)
         {
             //De: "Aguardando pagamento" para: "Pagamento Aprovado" ou "Cancelado"
+            // não: enviado para transportadora, entregue, aguardando pagamento.
             if (StatusVenda == EnumStatusVenda.AguardandoPagamento
                 && (statusNovo == EnumStatusVenda.PagamentoAprovado
                 || statusNovo == EnumStatusVenda.Cancelado))
             {
                 StatusVenda = statusNovo;
+                return true;
             }
             //De: "Pagamento Aprovado" para: "Enviado para Transportadora" ou "Cancelado"
+            //não: aguardando pagamento, paagamento aprovado, entregue
             else if (StatusVenda == EnumStatusVenda.PagamentoAprovado &&
                 (statusNovo == EnumStatusVenda.EnviadoParaTransportadora
                 || statusNovo == EnumStatusVenda.Cancelado))
             {
                 StatusVenda = statusNovo;
+                return true;
             }
             //De: "Enviado para Transportador" para: "Entregue"
+            //não: aguardando pagamento, pagamento aprovado, enviado para transportadora, cancelado.
             else if (StatusVenda == EnumStatusVenda.EnviadoParaTransportadora
                 && statusNovo == EnumStatusVenda.Entregue)
             {
                 StatusVenda = statusNovo;
+                return true;
             }
-            else
-            {
-                DomainExceptionValidation.When(true,
-                    "Transição de Status Inválida");
-            }
+
+            return false;
         }
 
     }

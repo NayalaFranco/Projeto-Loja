@@ -260,16 +260,18 @@ namespace Loja.TestesUnitarios.API
         }
 
         [Fact]
-        public async Task Put_Update_StatusVenda_Return_DomainExceptionValidation()
+        public async Task Put_Update_StatusVenda_Return_BadRequest()
         {
             // Arrange
             var ordemId = 2;
             var status = EnumStatusVenda.Entregue;
 
-            // Assert
-            var ex = await Assert.ThrowsAsync<DomainExceptionValidation>(async () => await controller.Put(ordemId, status));
+            // Act
+            var result = await controller.Put(ordemId, status);
 
-            Assert.Equal("Transição de Status Inválida", ex.Message);
+            // Assert
+            var badResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Transição de status inválida", badResult.Value);
         }
 
         /********************* TESTE DELETE **********************/

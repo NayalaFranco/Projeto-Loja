@@ -85,7 +85,10 @@ namespace Loja.Application.Services
         {
             Ordem ordem = _ordemRepository.GetByIdAsync(x => x.Id == id).Result;
 
-            ordem.UpdateStatus(statusVenda);
+            bool modificado = ordem.UpdateStatus(statusVenda);
+
+            if (!modificado)
+                return null;
 
             var ordemAtualizada = await _ordemRepository.UpdateAsync(ordem);
             return ordemAtualizada;

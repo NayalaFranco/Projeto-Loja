@@ -147,6 +147,9 @@ namespace Loja.API.Controllers
         {
             var ordem = await _ordemService.UpdateStatus(id, statusVenda);
 
+            if (ordem is null)
+                return BadRequest("Transição de status inválida");
+
             var ordemDto = _mapper.Map<OrdemDTO>(ordem);
 
             return Ok(ordemDto);
