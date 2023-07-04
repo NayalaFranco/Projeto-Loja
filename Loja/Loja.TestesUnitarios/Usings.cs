@@ -5,6 +5,7 @@ global using Loja.Application.DTOs;
 global using Loja.Application.Interfaces;
 global using Loja.Application.Mappings;
 global using Loja.Application.Services;
+global using Loja.Domain.Entities;
 global using Loja.Domain.PaginationEntities;
 global using Loja.Infrastructure.Context;
 global using Loja.Infrastructure.Repositories;

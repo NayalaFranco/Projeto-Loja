@@ -1,6 +1,4 @@
-﻿using Loja.Domain.Entities;
-
-namespace Loja.TestesUnitarios
+﻿namespace Loja.TestesUnitarios
 {
     internal class DBUnitTestsInitializer
     {
