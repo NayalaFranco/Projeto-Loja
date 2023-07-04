@@ -22,6 +22,6 @@
         public int Estoque { get; private set; }
         public int CategoriaId { get; private set; }
         public Categoria? Categoria { get; set; }
-        public ICollection<OrdemProduto> Ordens { get; set; }
+        public ICollection<OrdemProduto>? Ordens { get; set; }
     }
 }
