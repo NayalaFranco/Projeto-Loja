@@ -34,7 +34,7 @@
             {
                 _direction =
                     (value == "desc" || value == "Desc")
-                    ? value : "asc";
+                    ? "desc" : "asc";
             }
         }
     }
