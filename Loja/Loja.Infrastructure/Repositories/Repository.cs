@@ -33,7 +33,6 @@ namespace Loja.Infrastructure.Repositories
         /// Obtém uma lista de objetos do banco de dados de forma assíncrona.
         /// </summary>
         /// <param name="parameters">Objeto com os parâmetros de paginação</param>
-        /// <param name="orderByExpression">Lambda com a definição de ordenação da lista</param>
         /// <returns>Retorna um objeto PagingList com uma lista e os dados da paginação</returns>
         public async Task<PagingList<T>> GetAsync(PagingParameters parameters)
         {
@@ -57,7 +56,6 @@ namespace Loja.Infrastructure.Repositories
         /// Obtém os objetos que atendam ao critério.
         /// </summary>
         /// <param name="parameters">Objeto com os parâmetros de paginação</param>
-        /// <param name="orderByExpression">Lambda com a definição de ordenação da lista</param>
         /// <param name="predicate">Delegate com o critério de busca.</param>
         /// <returns>Retorna um objeto PagingList com uma lista e os dados da paginação</returns>
         public async Task<PagingList<T>> GetAsync(PagingParameters parameters, Expression<Func<T, bool>> predicate)

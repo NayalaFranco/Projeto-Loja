@@ -18,7 +18,6 @@ namespace Loja.Infrastructure.Repositories
         /// Busca ordens específicas de forma assíncrona e inclui a lista de Produtos.
         /// </summary>
         /// <param name="parameters">Parâmetros de paginação.</param>
-        /// <param name="orderByExpression">Lambda com a definição de ordenação para a lista.</param>
         /// <param name="predicate">Delegate com os critérios de busca.</param>
         /// <returns>Retorna um objeto PagingList com a lista de ordens e os dados da paginação</returns>
         public async Task<PagingList<Ordem>> GetOrdensAsync(PagingParameters parameters, Expression<Func<Ordem, bool>> predicate)
