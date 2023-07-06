@@ -112,9 +112,9 @@ namespace Loja.TestesUnitarios.Domain.Entities
                 22.99M,
                 DateTime.Parse("10-10-2010")
                 );
+            ordem.UpdateStatus(EnumStatusVenda.PagamentoAprovado);
 
             // Act
-            ordem.UpdateStatus(EnumStatusVenda.PagamentoAprovado);
             ordem.UpdateStatus(EnumStatusVenda.EnviadoParaTransportadora);
 
             // Assert
@@ -131,9 +131,9 @@ namespace Loja.TestesUnitarios.Domain.Entities
                 22.99M,
                 DateTime.Parse("10-10-2010")
                 );
+            ordem.UpdateStatus(EnumStatusVenda.PagamentoAprovado);
 
             // Act
-            ordem.UpdateStatus(EnumStatusVenda.PagamentoAprovado);
             ordem.UpdateStatus(EnumStatusVenda.Cancelado);
 
             // Assert
@@ -170,10 +170,10 @@ namespace Loja.TestesUnitarios.Domain.Entities
                 22.99M,
                 DateTime.Parse("10-10-2010")
                 );
-
-            // Act
             ordem.UpdateStatus(EnumStatusVenda.PagamentoAprovado);
             ordem.UpdateStatus(EnumStatusVenda.EnviadoParaTransportadora);
+
+            // Act
             ordem.UpdateStatus(EnumStatusVenda.Entregue);
 
             // Assert
@@ -190,10 +190,10 @@ namespace Loja.TestesUnitarios.Domain.Entities
                 22.99M,
                 DateTime.Parse("10-10-2010")
                 );
-
-            // Act
             ordem.UpdateStatus(EnumStatusVenda.PagamentoAprovado);
             ordem.UpdateStatus(EnumStatusVenda.EnviadoParaTransportadora);
+
+            // Act
             ordem.UpdateStatus(EnumStatusVenda.Entregue);
 
             // Assert
